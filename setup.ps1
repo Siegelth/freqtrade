@@ -7,6 +7,7 @@ $Global:LogFilePath = Join-Path ([System.IO.Path]::GetTempPath()) "script_log_$T
 $RequirementFiles = @("requirements.txt", "requirements-dev.txt", "requirements-hyperopt.txt", "requirements-freqai.txt", "requirements-freqai-rl.txt", "requirements-plot.txt")
 $VenvName = ".venv"
 $VenvDir = Join-Path $PSScriptRoot $VenvName
+$PythonExecutablePath = "C:\Users\Siegelth\AppData\Roaming\uv\python\cpython-3.14.4-windows-x86_64-none\python.exe"
 
 # Supported Python minor versions (detection order: prefer newest first)
 $SupportedMinorVersions = @(14,13,12)
@@ -176,26 +177,8 @@ function Test-PythonExecutable {
 }
 
 function Find-PythonExecutable {
-  # Build a list of candidate executables dynamically from supported versions
-  $PythonExecutables = @()
-  $PythonExecutables += "python"
-  foreach ($v in $SupportedMinorVersions) {
-    $PythonExecutables += "python3.$v"
-  }
-  $PythonExecutables += "python3"
-
-  # Add common Windows installation paths for each supported minor version
-  foreach ($v in $SupportedMinorVersions) {
-    $PythonExecutables += "C:\\Users\\$env:USERNAME\\AppData\\Local\\Programs\\Python\\Python3$v\\python.exe"
-  }
-  foreach ($v in $SupportedMinorVersions) {
-    $PythonExecutables += "C:\\Python3$v\\python.exe"
-  }
-
-  foreach ($Executable in $PythonExecutables) {
-    if (Test-PythonExecutable -PythonExecutable $Executable) {
-      return $Executable
-    }
+  if (Test-PythonExecutable -PythonExecutable $PythonExecutablePath) {
+    return $PythonExecutablePath
   }
 
   return $null
